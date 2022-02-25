@@ -18,4 +18,4 @@ class Post(models.Model):
     image = models.ImageField(upload_to=upload_update_image, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    state = FSMField(choices=State.choices, protected=False)
+    state = FSMField(choices=State.choices, protected=False, default=State.LIKE)

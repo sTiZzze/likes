@@ -16,4 +16,12 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('image', 'id')
+        fields = ('image',)
+
+
+class PostViewSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Post
+        fields = ('image', 'user')
