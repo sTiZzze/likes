@@ -24,4 +24,4 @@ class PostViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('image', 'user')
+        fields = ('id', 'image', 'user')
