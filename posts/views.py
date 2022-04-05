@@ -1,4 +1,4 @@
-from random import randint, shuffle
+from random import randint
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -8,9 +8,13 @@ from django.db.models import Count, Q
 
 from posts.serializers import UserSerializer, PostSerializer, PostViewSerializer
 from posts.models import Post
+from posts.tasks import like_post
+from posts.permissions import PostPermission
 
 
 class PostViewSet(ViewSet):
+
+    permission_classes = (PostPermission,)
 
     def list(self, request):
         """List all issues"""
@@ -41,8 +45,10 @@ class PostViewSet(ViewSet):
     def like(self, request, pk):
         """Create a new message in an issue"""
         post = get_object_or_404(Post, pk=pk)
-        post.like.add(request.user)
-        post.save()
+        #post.like.add(request.user.id)
+        #post.save()
+        task = like_post.delay(post.id, request.user.id)
+        task.wait()
         total_like = post.total_like
         return Response(status=status.HTTP_200_OK, data=total_like)
 
@@ -66,6 +72,7 @@ class PostViewSet(ViewSet):
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (PostPermission,)
 
     def list(self, request, *args, **kwargs):
         """List all images"""

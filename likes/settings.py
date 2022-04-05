@@ -171,3 +171,7 @@ SIMPLE_JWT = {
     'SIGNING_KEY': env('SECRET_KEY')
 }
 
+CELERY_TIMEZONE = "UTC"
+CELERY_TASK_TIME_LIMIT = 15  # seconds
+CELERY_BROKER_URL = "redis://%s:%s" % (env('REDIS_HOST'), env('REDIS_PORT'))
+CELERY_RESULT_BACKEND = "redis://%s:%s" % (env('REDIS_HOST'), env('REDIS_PORT'))
