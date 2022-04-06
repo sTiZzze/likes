@@ -4,9 +4,9 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from django.db.models import Count, Q
+from django.db.models import Count
 
-from posts.serializers import UserSerializer, PostSerializer, PostViewSerializer
+from posts.serializers import PostSerializer, PostViewSerializer
 from posts.models import Post
 from posts.tasks import like_post
 from posts.permissions import PostPermission
@@ -45,8 +45,6 @@ class PostViewSet(ViewSet):
     def like(self, request, pk):
         """Create a new message in an issue"""
         post = get_object_or_404(Post, pk=pk)
-        #post.like.add(request.user.id)
-        #post.save()
         task = like_post.delay(post.id, request.user.id)
         task.wait()
         total_like = post.total_like
@@ -85,6 +83,3 @@ class ImageViewSet(viewsets.ModelViewSet):
         form.is_valid(raise_exception=True)
         post = form.save(user=request.user)
         return Response(status=status.HTTP_201_CREATED, data=PostSerializer(post).data)
-
-
-

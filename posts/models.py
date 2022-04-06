@@ -35,4 +35,3 @@ class Post(models.Model):
     def block_post(self):
         if self.total_report > 1:
             self.is_blocked = True
-
