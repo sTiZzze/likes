@@ -23,7 +23,7 @@ class PostViewSet(ViewSet):
         return Response({'data': serializer.data})
 
     def retrieve(self, request, pk):
-        """Query an issue"""
+        """Query any post"""
         posts = get_object_or_404(Post, pk=pk)
         self.check_object_permissions(request, posts)
         serializer = PostViewSerializer(posts)
@@ -31,6 +31,7 @@ class PostViewSet(ViewSet):
 
     @action(detail=False, methods=['get'])
     def check(self, request):
+        """Random view posts"""
         count = Post.objects.filter(is_blocked=False).count()
         try:
             post = Post.randoms.all().filter(is_blocked=False).exclude(view=self.request.user)[randint(0, count - 1)]
@@ -43,7 +44,7 @@ class PostViewSet(ViewSet):
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk):
-        """Create a new message in an issue"""
+        """Like to post"""
         post = get_object_or_404(Post, pk=pk)
         task = like_post.delay(post.id, request.user.id)
         task.wait()
@@ -52,7 +53,7 @@ class PostViewSet(ViewSet):
 
     @action(detail=True, methods=['post'])
     def report(self, request, pk):
-        """Create a new message in an issue"""
+        """Report to post"""
         post = get_object_or_404(Post, pk=pk)
         post.report.add(request.user)
         post.block_post()
